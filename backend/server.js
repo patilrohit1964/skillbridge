@@ -15,7 +15,7 @@ app.get("/", (req, res) => {
 });
 // routes
 const authRoutes = require("./routes/auth");
-app.use("/api/v1", authRoutes);
+app.use("/api/v1/user", authRoutes);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
