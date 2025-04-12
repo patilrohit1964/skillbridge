@@ -6,6 +6,7 @@ const asyncHandler = require("express-async-handler");
 const argon2 = require("argon2");
 const jwt = require("jsonwebtoken");
 const protect = require("../middleware/authMiddleware");
+const sendEmail = require("../utils/sendEmail");
 
 // validations schemas
 const registerSchema = z.object({
@@ -37,6 +38,13 @@ router.post(
     // hashed pass
     const hashedPass = await argon2.hash(password);
     const user = await User.create({ name, email, password: hashedPass });
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const message = `
+        <h1>Welcome to MERN App 🎉</h1>
+        <p>Your OTP is <b>${otp}</b></p>
+        <p>Valid for 10 minutes only.</p>
+    `;
+    await sendEmail(email, "verify your email", message);
     res.status(201).json({
       _id: user._id,
       name: user.name,
@@ -88,8 +96,23 @@ router.get(
   asyncHandler(async (req, res) => {
     res.json({
       message: "You are logged in ✅",
-      userId:req.user
+      userId: req.user,
     });
   })
 );
+
+router.post("/test-otp", async (req, res) => {
+  const { email } = req.body;
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const message = `  <h2>Hello there 👋</h2>
+    <p>Your test OTP is: <b>${otp}</b></p>
+    <p>Valid for 10 minutes.</p>`;
+  try {
+    await sendEmail(email, "Your test otp", message);
+    res.status(200).json({ message: "otp sent", otp });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "failed to send otp" });
+  }
+});
 module.exports = router;
