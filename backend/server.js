@@ -3,12 +3,13 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDb = require("./config/db");
-dotenv.config();
+const morgan = require("morgan");
+dotenv.config({ path: "./config/.env" });
 connectDb();
 const app = express();
 app.use(cors());
 app.use(express.json());
-
+app.use(morgan("dev"));
 app.get("/", (req, res) => {
   res.send("Api is running");
 });
