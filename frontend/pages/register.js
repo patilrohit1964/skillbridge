@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Navbar from "../components/navbar";
 import { useRegisterMutation, useVerifyOtpMutation } from "./api/authApi";
+import { Router } from "next/router";
 
 export default function Register() {
   const [formData, setFormdata] = useState({
@@ -24,7 +25,7 @@ export default function Register() {
       console.log(error);
     }
   };
-  const optVerify = async (e) => {
+  const otpVerify = async (e) => {
     try {
       e.preventDefault();
       //   await verifyOtp().unwrap();
@@ -48,6 +49,7 @@ export default function Register() {
                 placeholder="Full Name"
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                 onChange={changeHandler}
+                value={formData.name}
                 name="name"
               />
               <input
@@ -56,6 +58,7 @@ export default function Register() {
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                 onChange={changeHandler}
                 name="email"
+                value={formData.email}
               />
               <input
                 type="password"
@@ -63,6 +66,7 @@ export default function Register() {
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                 onChange={changeHandler}
                 name="password"
+                value={formData.password}
               />
 
               <button
@@ -73,7 +77,7 @@ export default function Register() {
               </button>
             </form>
           ) : (
-            <form className="space-y-4" onSubmit={submitHandler}>
+            <form className="space-y-4" onSubmit={otpVerify}>
               <input
                 type="text"
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -86,7 +90,7 @@ export default function Register() {
                 type="submit"
                 className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 cursor-pointer"
               >
-                Register
+                Verify
               </button>
             </form>
           )}
