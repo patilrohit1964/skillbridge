@@ -14,6 +14,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please enter your password"],
     },
+    // otp fields
+    otp: String,
+    otpExpires: Date,
+    isVerified: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

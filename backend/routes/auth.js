@@ -37,20 +37,21 @@ router.post(
     }
     // hashed pass
     const hashedPass = await argon2.hash(password);
-    const user = await User.create({ name, email, password: hashedPass });
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const message = `
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPass,
+      otp,
+      otpExpires: Date.now() + 10 * 60 * 1000,
+    });
+    const html = `
         <h1>Welcome to MERN App 🎉</h1>
         <p>Your OTP is <b>${otp}</b></p>
         <p>Valid for 10 minutes only.</p>
     `;
-    await sendEmail(email, "verify your email", message);
-    res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      message: "User registered successfully ✅",
-    });
+    await sendEmail(email, "verify your email", html);
+    res.status(201).json({ message: "Registered! OTP sent to your email." });
   })
 );
 
@@ -66,13 +67,19 @@ router.post(
     const { email, password } = parsed?.data;
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: "Invalid credentials ❌" });
+      return res.status(404).json({ message: "user not found" });
     }
     const isPassCorrect = await argon2.verify(user.password, password);
+
     if (!isPassCorrect) {
       res.status(401).json({
         message: "Invalid credentials ❌",
       });
+    }
+    if (!user.isVerified) {
+      return res
+        .status(401)
+        .json({ message: "Please verify your email first" });
     }
     // jwt assign
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
@@ -90,6 +97,34 @@ router.post(
   })
 );
 
+router.post(
+  "/verify-otp",
+  asyncHandler(async (req, res) => {
+    const { email, otp } = req.body;
+    try {
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(400).json({ message: "user not found" });
+      }
+      if (user.isVerified) {
+        return res.status(400).json({ message: "user already verified" });
+      }
+      if (user.otp != otp) {
+        return res.status(400).json({ message: "invalid otp" });
+      }
+      if (user.otpExpires < Date.now()) {
+        return res.status(400).json({ message: "otp has expired" });
+      }
+      user.isVerified = true;
+      user.otp = undefined;
+      user.otpExpires = undefined;
+      res.status(200).json({ message: "Email verified successfully!" });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "verification failed" });
+    }
+  })
+);
 router.get(
   "/profile",
   protect,
@@ -101,18 +136,4 @@ router.get(
   })
 );
 
-router.post("/test-otp", async (req, res) => {
-  const { email } = req.body;
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  const message = `  <h2>Hello there 👋</h2>
-    <p>Your test OTP is: <b>${otp}</b></p>
-    <p>Valid for 10 minutes.</p>`;
-  try {
-    await sendEmail(email, "Your test otp", message);
-    res.status(200).json({ message: "otp sent", otp });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "failed to send otp" });
-  }
-});
 module.exports = router;
