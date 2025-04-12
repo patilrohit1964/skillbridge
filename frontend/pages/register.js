@@ -1,39 +1,97 @@
+import { useState } from "react";
 import Navbar from "../components/navbar";
+import { useRegisterMutation, useVerifyOtpMutation } from "./api/authApi";
 
 export default function Register() {
-    return (
-        <>
-            <Navbar />
-            <div className="min-h-screen flex items-center justify-center bg-gray-100">
-                <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
-                    <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">Create Account</h2>
+  const [formData, setFormdata] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [otp, setOtp] = useState("");
+  const [register] = useRegisterMutation();
+  const [verifyOtp] = useVerifyOtpMutation();
+  const [step, setStep] = useState(1);
+  const changeHandler = (e) => {
+    setFormdata((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    try {
+      //   await register().unwrap();
+      setStep(2);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const optVerify = async (e) => {
+    try {
+      e.preventDefault();
+      //   await verifyOtp().unwrap();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  return (
+    <>
+      <Navbar />
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md">
+          <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">
+            {step == 1 ? "Create Account" : "Verify Otp"}
+          </h2>
 
-                    <form className="space-y-4">
-                        <input
-                            type="text"
-                            placeholder="Full Name"
-                            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        />
-                        <input
-                            type="email"
-                            placeholder="Email"
-                            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        />
-                        <input
-                            type="password"
-                            placeholder="Password"
-                            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        />
+          {step == 1 ? (
+            <form className="space-y-4" onSubmit={submitHandler}>
+              <input
+                type="text"
+                placeholder="Full Name"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                onChange={changeHandler}
+                name="name"
+              />
+              <input
+                type="email"
+                placeholder="Email"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                onChange={changeHandler}
+                name="email"
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                onChange={changeHandler}
+                name="password"
+              />
 
-                        <button
-                            type="submit"
-                            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
-                        >
-                            Register
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </>
-    );
+              <button
+                type="submit"
+                className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 cursor-pointer"
+              >
+                Register
+              </button>
+            </form>
+          ) : (
+            <form className="space-y-4" onSubmit={submitHandler}>
+              <input
+                type="text"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                onChange={(e) => setOtp(e.target.value)}
+                name="name"
+                value={otp}
+                placeholder="enter your otp"
+              />
+              <button
+                type="submit"
+                className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 cursor-pointer"
+              >
+                Register
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+    </>
+  );
 }
