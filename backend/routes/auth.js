@@ -5,6 +5,7 @@ const { z } = require("zod");
 const asyncHandler = require("express-async-handler");
 const argon2 = require("argon2");
 const jwt = require("jsonwebtoken");
+const protect = require("../middleware/authMiddleware");
 
 // validations schemas
 const registerSchema = z.object({
@@ -77,6 +78,17 @@ router.post(
         name: user.name,
         email: user.email,
       },
+    });
+  })
+);
+
+router.get(
+  "/profile",
+  protect,
+  asyncHandler(async (req, res) => {
+    res.json({
+      message: "You are logged in ✅",
+      userId:req.user
     });
   })
 );
