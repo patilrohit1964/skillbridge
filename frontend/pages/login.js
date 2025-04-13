@@ -1,6 +1,35 @@
+import { useEffect, useState } from "react";
 import Navbar from "../components/navbar";
+import { useLoginMutation } from "./api/authApi";
+import { useRouter } from "next/router";
 
 export default function Login() {
+  const [formData, setFormdata] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [login, { data, isLoading, isSuccess, isError, error }] =
+    useLoginMutation();
+  const router = useRouter();
+
+  const loginHandler = async (e) => {
+    e.preventDefault();
+    try {
+      await login(formData).unwrap();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (isSuccess) {
+      router.push("/");
+    }
+    if (isError) {
+      console.log(error);
+    }
+  }, [isSuccess, isError, error]);
   return (
     <>
       <Navbar />
@@ -10,23 +39,36 @@ export default function Login() {
             Login to your Account
           </h2>
 
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={loginHandler}>
             <input
               type="email"
               placeholder="Email"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              name="email"
+              onChange={(e) =>
+                setFormdata((prev) => ({
+                  ...prev,
+                  [e.target.name]: e.target.value,
+                }))
+              }
             />
             <input
               type="password"
               placeholder="Password"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              onChange={(e) =>
+                setFormdata((prev) => ({
+                  ...prev,
+                  [e.target.name]: e.target.value,
+                }))
+              }
             />
 
             <button
               type="submit"
               className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
             >
-              Login
+              {isLoading ? "Please Wait..." : "Login"}
             </button>
           </form>
         </div>

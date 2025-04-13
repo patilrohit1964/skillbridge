@@ -51,10 +51,13 @@ router.post(
         <p>Valid for 10 minutes only.</p>
     `;
     await sendEmail(email, "verify your email", html);
-    res.status(201).json({ message: "Registered! OTP sent to your email.",user:{
-      _id:user._id,
-      email:user.email,
-    } });
+    res.status(201).json({
+      message: "Registered! OTP sent to your email.",
+      user: {
+        _id: user._id,
+        email: user.email,
+      },
+    });
   })
 );
 
@@ -121,6 +124,7 @@ router.post(
       user.isVerified = true;
       user.otp = undefined;
       user.otpExpires = undefined;
+      await user.save();
       res.status(200).json({ message: "Email verified successfully!" });
     } catch (error) {
       console.log(error);
