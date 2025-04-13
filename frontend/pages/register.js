@@ -21,16 +21,16 @@ export default function Register() {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      //   await register().unwrap();
+      await register(formData).unwrap();
       setStep(2);
     } catch (error) {
       console.log(error);
     }
   };
   const otpVerify = async (e) => {
+    e.preventDefault();
     try {
-      e.preventDefault();
-      //   await verifyOtp().unwrap();
+      await verifyOtp(otp).unwrap();
       router.push("/");
     } catch (error) {
       console.log(error);
