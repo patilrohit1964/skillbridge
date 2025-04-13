@@ -2,6 +2,8 @@ import { useState } from "react";
 import Navbar from "../components/navbar";
 import { useRegisterMutation, useVerifyOtpMutation } from "./api/authApi";
 import { useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "@/redux/features/authSlice";
 
 export default function Register() {
   const [formData, setFormdata] = useState({
@@ -10,10 +12,13 @@ export default function Register() {
     password: "",
   });
   const [otp, setOtp] = useState("");
-  const [register] = useRegisterMutation();
-  const [verifyOtp] = useVerifyOtpMutation();
+  const [register, { isLoading, data }] = useRegisterMutation();
+  const [verifyOtp, { isLoading: verifyLoading }] = useVerifyOtpMutation();
   const [step, setStep] = useState(1);
   const router = useRouter();
+  const dispatch = useDispatch();
+
+  const { user } = useSelector((state) => state.auth);
 
   const changeHandler = (e) => {
     setFormdata((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -21,7 +26,8 @@ export default function Register() {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      await register(formData).unwrap();
+      const res = await register(formData).unwrap();
+      dispatch(setUser(res?.user));
       setStep(2);
     } catch (error) {
       console.log(error);
@@ -30,8 +36,8 @@ export default function Register() {
   const otpVerify = async (e) => {
     e.preventDefault();
     try {
-      await verifyOtp(otp).unwrap();
-      router.push("/login");
+      await verifyOtp({ otp, email: user.email }).unwrap();
+      // router.push("/login");
     } catch (error) {
       console.log(error);
     }
@@ -76,11 +82,18 @@ export default function Register() {
                 type="submit"
                 className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 cursor-pointer"
               >
-                Register
+                {isLoading ? "Please Wait..." : "Register"}
               </button>
             </form>
           ) : (
             <form className="space-y-4" onSubmit={otpVerify}>
+              <input
+                type="text"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                name="email"
+                // value={user.}
+                placeholder="enter your otp"
+              />
               <input
                 type="text"
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -93,7 +106,7 @@ export default function Register() {
                 type="submit"
                 className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 cursor-pointer"
               >
-                Verify
+                {verifyLoading ? "verify" : "Verify otp"}
               </button>
             </form>
           )}

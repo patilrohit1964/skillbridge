@@ -51,7 +51,10 @@ router.post(
         <p>Valid for 10 minutes only.</p>
     `;
     await sendEmail(email, "verify your email", html);
-    res.status(201).json({ message: "Registered! OTP sent to your email." });
+    res.status(201).json({ message: "Registered! OTP sent to your email.",user:{
+      _id:user._id,
+      email:user.email,
+    } });
   })
 );
 

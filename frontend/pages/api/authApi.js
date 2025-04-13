@@ -18,10 +18,10 @@ const authApi = createApi({
       }),
     }),
     verifyOtp: builder.mutation({
-      query: (data) => ({
+      query: ({ email, otp }) => ({
         url: "/verify-otp",
         method: "POST",
-        body: data,
+        body: { email, otp },
       }),
     }),
   }),
