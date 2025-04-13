@@ -17,19 +17,14 @@ export default function Login() {
     e.preventDefault();
     try {
       await login(formData).unwrap();
+      if (isSuccess) {
+        router.push("/");
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
-  useEffect(() => {
-    if (isSuccess) {
-      router.push("/");
-    }
-    if (isError) {
-      console.log(error);
-    }
-  }, [isSuccess, isError, error]);
   return (
     <>
       <Navbar />
