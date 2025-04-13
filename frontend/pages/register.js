@@ -21,7 +21,7 @@ export default function Register() {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      await register(formData).unwrap();
+      // await register(formData).unwrap();
       setStep(2);
     } catch (error) {
       console.log(error);
@@ -30,7 +30,7 @@ export default function Register() {
   const otpVerify = async (e) => {
     e.preventDefault();
     try {
-      await verifyOtp(otp).unwrap();
+      // await verifyOtp(otp).unwrap();
       router.push("/");
     } catch (error) {
       console.log(error);
