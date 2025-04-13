@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Navbar from "../components/navbar";
 import { useRegisterMutation, useVerifyOtpMutation } from "./api/authApi";
-import { Router } from "next/router";
 import { useRouter } from "next/navigation";
 
 export default function Register() {
@@ -15,13 +14,14 @@ export default function Register() {
   const [verifyOtp] = useVerifyOtpMutation();
   const [step, setStep] = useState(1);
   const router = useRouter();
+
   const changeHandler = (e) => {
     setFormdata((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      // await register(formData).unwrap();
+      await register(formData).unwrap();
       setStep(2);
     } catch (error) {
       console.log(error);
@@ -30,8 +30,8 @@ export default function Register() {
   const otpVerify = async (e) => {
     e.preventDefault();
     try {
-      // await verifyOtp(otp).unwrap();
-      router.push("/");
+      await verifyOtp(otp).unwrap();
+      router.push("/login");
     } catch (error) {
       console.log(error);
     }
