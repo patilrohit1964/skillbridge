@@ -17,7 +17,6 @@ const registerSchema = z.object({
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "password at least must be 6 characters"),
 });
 //////////////////////////////////////////////////////////////////
 // api of register
@@ -78,7 +77,7 @@ router.post(
       return res.status(404).json({ message: "User not found" });
     }
 
-    const isPassCorrect = await argon2.verify(user.password, password);
+    const isPassCorrect = await argon2.verify(user.password, req.body.password);
 
     if (!isPassCorrect) {
       return res.status(401).json({

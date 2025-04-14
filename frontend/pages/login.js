@@ -15,8 +15,10 @@ export default function Login() {
 
   const loginHandler = async (e) => {
     e.preventDefault();
+    console.log(formData);
     try {
-      await login(formData).unwrap();
+      const res = await login(formData).unwrap();
+      console.log(res);
       if (isSuccess) {
         router.push("/");
       }
@@ -50,6 +52,7 @@ export default function Login() {
             <input
               type="password"
               placeholder="Password"
+              name="password"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               onChange={(e) =>
                 setFormdata((prev) => ({
