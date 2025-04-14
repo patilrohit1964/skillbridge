@@ -3,6 +3,7 @@ import Navbar from "@/components/navbar";
 import { useState } from "react";
 import { useForgotPassMutation, useResetPassMutation } from "./api/authApi";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -12,23 +13,29 @@ export default function ForgotPasswordPage() {
     otp: "",
   });
   const [forgotPass, { isLoading, isSuccess, data }] = useForgotPassMutation();
-  const [resetPass, { isLoading: resetLoading, isSuccess: resetSuccess }] =
-    useResetPassMutation();
+  const router = useRouter();
+  const [
+    resetPass,
+    { isLoading: resetLoading, isSuccess: resetSuccess, data: resetData },
+  ] = useResetPassMutation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await forgotPass({ email }).unwrap();
       toast.success(data?.message || "OTP sent successfully");
+      setStep(true);
     } catch (err) {
       toast.error("Something went wrong");
     }
   };
+
   const resetPassHandler = async (e) => {
     e.preventDefault();
     try {
       await resetPass({ ...formData, email });
-      toast.success();
+      toast.success(resetData?.message || "Password Update Successfully");
+      router.push("/");
     } catch (error) {
       console.log(error);
       toast.error(error);
@@ -45,7 +52,7 @@ export default function ForgotPasswordPage() {
           <h2 className="text-xl font-bold mb-4 text-center my-2">
             {step ? "Reset Password" : "Forgot Password"}
           </h2>
-          {!step ? (
+          {
             <form onSubmit={step ? resetPassHandler : handleSubmit}>
               <input
                 type="email"
@@ -74,6 +81,7 @@ export default function ForgotPasswordPage() {
                   />
                   <input
                     type="text"
+                    name="newPassword"
                     placeholder="Enter your new password"
                     className="w-full p-2 border rounded mb-3"
                     value={formData.newPassword}
@@ -101,11 +109,7 @@ export default function ForgotPasswordPage() {
                   : "Send OTP"}
               </button>
             </form>
-          ) : (
-            <p className="text-red-600 font-semibold text-center">
-              "Something Went Wrong."
-            </p>
-          )}
+          }
         </div>
       </div>
     </>
