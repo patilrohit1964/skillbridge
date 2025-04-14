@@ -66,32 +66,37 @@ router.post(
   asyncHandler(async (req, res) => {
     const parsed = loginSchema.safeParse(req.body);
     if (!parsed.success) {
-      res.send(400).json({
+      return res.status(400).json({
         message: parsed.error.errors[0].message,
       });
     }
+
     const { email, password } = parsed?.data;
     const user = await User.findOne({ email });
+
     if (!user) {
-      return res.status(404).json({ message: "user not found" });
+      return res.status(404).json({ message: "User not found" });
     }
+
     const isPassCorrect = await argon2.verify(user.password, password);
 
     if (!isPassCorrect) {
-      res.status(401).json({
+      return res.status(401).json({
         message: "Invalid credentials ❌",
       });
     }
+
     if (!user.isVerified) {
       return res
         .status(401)
         .json({ message: "Please verify your email first" });
     }
-    // jwt assign
+
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
-    res.status(200).json({
+
+    return res.status(200).json({
       message: "Login successful 🤘",
       token,
       user: {
