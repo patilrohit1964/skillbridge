@@ -20,8 +20,8 @@ export default function ForgotPasswordPage() {
 
   return (
     <>
-      <div>
-        <Navbar />
+      <Navbar />
+      <div className="min-h-screen flex justify-center items-center">
         <div className="max-w-md mx-auto mt-10 p-4 shadow-md border rounded">
           <h2 className="text-xl font-bold mb-4">Forgot Password</h2>
           {!success ? (
