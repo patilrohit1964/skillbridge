@@ -3,6 +3,7 @@ import Navbar from "../components/navbar";
 import { useLoginMutation } from "./api/authApi";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
+import Link from "next/link";
 
 export default function Login() {
   const [formData, setFormdata] = useState({
@@ -65,7 +66,14 @@ export default function Login() {
                 }))
               }
             />
-
+            <div className="flex justify-end">
+              <Link
+                href="/resetPass"
+                className="text-sm text-blue-600 hover:text-blue-800"
+              >
+                Forgot Password?
+              </Link>
+            </div>
             <button
               type="submit"
               className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
