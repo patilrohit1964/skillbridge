@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../components/navbar";
 import { useLoginMutation } from "./api/authApi";
 import { useRouter } from "next/router";
+import { toast } from "react-toastify";
 
 export default function Login() {
   const [formData, setFormdata] = useState({
@@ -15,18 +16,21 @@ export default function Login() {
 
   const loginHandler = async (e) => {
     e.preventDefault();
-    console.log(formData);
     try {
-      const res = await login(formData).unwrap();
-      console.log(res);
-      if (isSuccess) {
-        router.push("/");
-      }
+      await login(formData).unwrap();
+      router.push("/");
     } catch (error) {
       console.log(error);
     }
   };
-
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success(data?.message || "login success");
+    }
+    if (isError) {
+      toast.error("something wrong");
+    }
+  }, [isSuccess, isError, error]);
   return (
     <>
       <Navbar />
