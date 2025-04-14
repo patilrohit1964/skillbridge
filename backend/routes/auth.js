@@ -143,29 +143,33 @@ router.post(
     try {
       const { email } = req.body;
       if (!email) {
-        return res.status(400).json({
-          message: "email is required",
-        });
+        return res.status(400).json({ message: "Email is required" });
       }
       const user = await User.findOne({ email });
       if (!user) {
         return res.status(400).json({
           message:
-            "user not found with this existing email please create account first",
+            "User not found with this email. Please create an account first.",
         });
       }
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
       user.otp = otp;
-      user.otpExpires = Date.now() + 2 * 60 * 1000;
-      user.save();
+      user.otpExpires = Date.now() + 10 * 60 * 1000;
+      await user.save();
       const html = `
       <h1>Request for reset password 🎉</h1>
       <p>Your OTP is <b>${otp}</b></p>
       <p>Valid for 10 minutes only.</p>
   `;
       await sendEmail(email, "Reset Password", html);
+      return res.status(200).json({
+        message: "OTP sent successfully",
+      });
     } catch (error) {
       console.log(error);
+      return res.status(500).json({
+        message: "Something went wrong. Please try again.",
+      });
     }
   })
 );
@@ -191,7 +195,7 @@ router.post(
       user.otp = null;
       user.otpExpires = null;
       await user.save();
-      res.status(200).json({ message: "Password reset successful" });
+      return res.status(200).json({ message: "Password reset successful" });
     } catch (error) {
       console.error("Reset password error:", error);
       res.status(500).json({ message: "Something went wrong" });
