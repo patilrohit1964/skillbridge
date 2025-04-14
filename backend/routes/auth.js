@@ -136,6 +136,69 @@ router.post(
     }
   })
 );
+
+router.post(
+  "/forgot-password",
+  asyncHandler(async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email) {
+        return res.status(400).json({
+          message: "email is required",
+        });
+      }
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(400).json({
+          message:
+            "user not found with this existing email please create account first",
+        });
+      }
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      user.otp = otp;
+      user.otpExpires = Date.now() + 2 * 60 * 1000;
+      user.save();
+      const html = `
+      <h1>Request for reset password 🎉</h1>
+      <p>Your OTP is <b>${otp}</b></p>
+      <p>Valid for 10 minutes only.</p>
+  `;
+      await sendEmail(email, "Reset Password", html);
+    } catch (error) {
+      console.log(error);
+    }
+  })
+);
+
+router.post(
+  "/reset-pass",
+  asyncHandler(async (req, res) => {
+    try {
+      const { email, newPassword, otp } = req.body;
+      if (!email || !newPassword || !otp) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+      const user = await User.findOne({ email, otp });
+      if (!user) {
+        return res.status(400).json({
+          message: "User not found with this email or OTP is incorrect",
+        });
+      }
+      if (user.otpExpires < Date.now()) {
+        return res.status(400).json({ message: "OTP has expired" });
+      }
+      user.password = await argon2.hash(newPassword);
+      user.otp = null;
+      user.otpExpires = null;
+      await user.save();
+      res.status(200).json({ message: "Password reset successful" });
+    } catch (error) {
+      console.error("Reset password error:", error);
+      res.status(500).json({ message: "Something went wrong" });
+    }
+  })
+);
+
 router.get(
   "/profile",
   protect,
