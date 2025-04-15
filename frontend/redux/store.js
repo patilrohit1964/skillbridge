@@ -3,6 +3,7 @@ import authApi from "../pages/api/authApi";
 import authSlice from "./features/authSlice";
 import storage from "redux-persist/lib/storage";
 import { persistStore, persistReducer } from "redux-persist";
+import rootReducer from "./rootReducer";
 
 const persistConfig = {
   key: "root",
@@ -11,14 +12,13 @@ const persistConfig = {
   // blacklist:[] //what we cnnot want to persist in localstorage
 };
 
-const persistReducer = persistReducer(persistConfig);
+const persistReducer = persistReducer(persistConfig, rootReducer);
 const store = configureStore({
-  reducer: {
-    auth: authSlice,
-    [authApi.reducerPath]: authApi.reducer,
-  },
+  reducer: persistReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(authApi.middleware),
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }).concat(authApi.middleware),
 });
 export const persistor = persistStore(store);
 export default store;
