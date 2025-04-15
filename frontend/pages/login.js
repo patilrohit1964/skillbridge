@@ -22,14 +22,12 @@ export default function Login() {
       router.push("/");
     } catch (error) {
       console.log(error);
+      toast.error(error?.data?.message);
     }
   };
   useEffect(() => {
     if (isSuccess) {
       toast.success(data?.message || "login success");
-    }
-    if (isError) {
-      toast.error("something wrong");
     }
   }, [isSuccess, isError, error]);
   return (
