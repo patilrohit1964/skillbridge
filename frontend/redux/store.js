@@ -10,7 +10,7 @@ import {
   REGISTER,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import authApi from "../pages/api/authApi";
+import { authApi } from "../pages/api/authApi";
 import rootReducer from "./rootReducer";
 
 const persistConfig = {
