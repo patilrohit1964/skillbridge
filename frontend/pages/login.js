@@ -4,6 +4,8 @@ import { useLoginMutation } from "./api/authApi";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import Link from "next/link";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/redux/features/authSlice";
 
 export default function Login() {
   const [formData, setFormdata] = useState({
@@ -14,6 +16,7 @@ export default function Login() {
   const [login, { data, isLoading, isSuccess, isError, error }] =
     useLoginMutation();
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const loginHandler = async (e) => {
     e.preventDefault();
@@ -28,6 +31,8 @@ export default function Login() {
   useEffect(() => {
     if (isSuccess) {
       toast.success(data?.message || "login success");
+      console.log(data);
+      dispatch(setUser(data?.user));
     }
   }, [isSuccess, isError, error]);
   return (
