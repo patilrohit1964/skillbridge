@@ -1,8 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
-import authApi from "../pages/api/authApi";
-import authSlice from "./features/authSlice";
+import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import { persistStore, persistReducer } from "redux-persist";
+import authApi from "../pages/api/authApi";
 import rootReducer from "./rootReducer";
 
 const persistConfig = {
@@ -12,9 +11,9 @@ const persistConfig = {
   // blacklist:[] //what we cnnot want to persist in localstorage
 };
 
-const persistReducer = persistReducer(persistConfig, rootReducer);
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 const store = configureStore({
-  reducer: persistReducer,
+  reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
