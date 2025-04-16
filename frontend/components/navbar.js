@@ -15,9 +15,7 @@ const Navbar = () => {
     dispatch(setUser(null));
     router.push("/login");
   };
-  let a=[1,2,3]
-  a[10]=5
-  console.log(a)
+
   return (
     <nav className="bg-white shadow-md px-6 py-4 flex justify-between items-center">
       <h1 className="text-xl font-bold text-blue-600">SkillBridge</h1>
@@ -29,7 +27,14 @@ const Navbar = () => {
         </li>
         {user ? (
           <>
-            <li>Profile</li>
+            <li>
+              <Link
+                href="/profile"
+                className="text-gray-700 hover:text-blue-600"
+              >
+                Profile
+              </Link>
+            </li>
             <li>
               <button
                 className="cursor-pointer bg-blue-600 py-2 px-4 text-white rounded-lg"
