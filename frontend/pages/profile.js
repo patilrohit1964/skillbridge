@@ -6,9 +6,9 @@ const Profile = () => {
     <>
       <Navbar />
       <div className="bg-[#ddd] min-h-screen flex items-center justify-center">
-        <div className="border border-red-500 max-w-7xl m-auto">
+        <div className="border border-red-500 w-7xl m-auto bg-white">
           <div className="max-w-6xl border border-blue-700 flex justify-between items-center">
-            <div>
+            <div className="w-96">
               <div className="flex flex-col my-8">
                 <label className="mb-4">User Name</label>
                 <input
@@ -60,7 +60,7 @@ const Profile = () => {
                 />
               </div>
             </div>
-            <div className="w-60 h-60 rounded-full overflow-hidden">
+            <div className="w-80 h-80 rounded-full overflow-hidden">
               <img
                 src="https://cdn.dribbble.com/userupload/41930657/file/still-92550ea561f7221c92447018141ae660.gif?resize=400x0"
                 className="h-full w-full"
