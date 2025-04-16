@@ -31,7 +31,6 @@ export default function Login() {
   useEffect(() => {
     if (isSuccess) {
       toast.success(data?.message || "login success");
-      console.log(data);
       dispatch(setUser(data?.user));
     }
   }, [isSuccess, isError, error]);
